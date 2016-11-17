@@ -1,0 +1,44 @@
+Calculated LOAD Value													04		%				0.39215686			0				50
+Engine Coolant Temperature											05		°C				1							-40			3
+Fuel Rail Pressure(gauge)												0A		kPa			3							0				50
+Intake Manifold Absolute Pressure									0B		kPa														50
+Engine RPM																		0C		/min			0.25						0				5
+Vehicle Speed Sensor														0D		km/h													1
+Ignition Timing Advance(for #1 Cylinder)						0E			°				0.5						-64			50
+Intake Air Temperature													0F			°C				1							-40			3
+Air Flow Rate from Mass Air Flow Sensor						10		g/s			0.01						0				5
+Absolute Throttle Position												11		%				0.39215686			0				50
+Time Since Engine Start													1F			sec.														1
+Distance Travelled While MIL is Activated						21		km														5
+Fuel Rail Pressure relative to manifold vacuum				22		kPa			0.079					0				50
+Fuel Rail Pressure															23		kPa			10						0				50
+Commanded EGR															2C		%				0.39215686			0				50
+EGR Error																			2D		%				0.78125				-100			50
+Commanded Evaporative Purge										2E			%				0.39215686			0				50
+Fuel Level Input																2F			%				0.39215686			0				50
+Number of warm-ups since DTCs cleared						30		times													50
+Distance since DTCs cleared											31		km														5
+Evap System Vapour Pressure											32		Pa				0.25						-8192		50
+Barometric Pressure														33		kPa														50
+Catalyst Temperature Bank 1,Sensor 1							3C		°C				0.1						-40			50
+Catalyst Temperature Bank 2,Sensor 1							3D		°C				0.1						-40			50
+Catalyst Temperature Bank 1,Sensor 2							3E			°C				0.1						-40			50
+Catalyst Temperature Bank 2,Sensor 2							3F			°C				0.1						-40			50
+Control module voltage													42		V				0.001						0			50
+Absolute Load Value														43		%				0.39215686				0			50
+Commanded Equivalence Ratio										44		R				0.000030518			0			50
+Relative Throttle Position												45		%				0.39215686				0			50
+Ambient air temperature												46		°C				1								-40		50
+Absolute Throttle Position B											47		%				0.39215686				0			50
+Absolute Throttle Position C											48		%				0.39215686				0			50
+Accelerator Pedal Position D											49		%				0.39215686				0			50
+Accelerator Pedal Position E											4A		%				0.39215686				0			50
+Accelerator Pedal Position F											4B		%				0.39215686				0			50
+Commanded Throttle Actuator Control							4C		%				0.39215686				0			50
+Time run by the engine while MIL is activated				4D		min														1
+Time since DTCs cleared												4E			min														1
+Alcohol Fuel Percentage													52		%				0.39215686				0			50
+Absolute Evap System Vapour Pressure							53		kPa			0.005						0			50
+Evap System Vapour Pressure											54		Pa				1								-32767	50
+Fuel Rail Pressure															59		kPa			10							0			50
+Relative Accelerator Pedal Position								5A		%				0.39215686				0			50

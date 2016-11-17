@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+
+	<!-- typeAliases is only relavant to the current configuration file as well as mapper defined in this configuration file
+	<typeAliases>
+	    <typeAlias type="spring_mybatis_integration.CustomerModel" alias="CustomerModel"/>
+	</typeAliases>-->
+
+	<mappers>
+		<!-- <mapper resource="main/resources/DAO/UserInfoBasicMapper.xml" /> -->
+		<mapper resource="org/judking/carkeeper/resource/mapper/PddMapper.xml" />
+		<mapper resource="org/judking/carkeeper/resource/mapper/UserMapper.xml" />
+	</mappers>
+	
+</configuration>

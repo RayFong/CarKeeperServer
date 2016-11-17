@@ -1,0 +1,13 @@
+*.iml
+.gradle
+/local.properties
+/.idea/workspace.xml
+/.idea/libraries
+.svn/*
+.DS_Store
+/build
+/captures
+bin/*
+WEB-INF/classes/*
+WEB-INF/logs/*
+work/*
