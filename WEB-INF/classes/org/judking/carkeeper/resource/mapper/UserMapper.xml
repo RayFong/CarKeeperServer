@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="org.judking.carkeeper.src.DAO.IUserDAO">
+	
+	<resultMap id="userResultMap"  type="org.judking.carkeeper.src.model.UserModel">
+		<id property="user_id" column="user_id"/>
+		<id property="reg_time" column="reg_time" javaType="java.util.Date" jdbcType="TIMESTAMP"/>
+		<id property="user_name" column="user_name"/>
+		<id property="user_passwd" column="user_passwd"/>
+		<id property="private_token" column="private_token"/>
+	</resultMap>
+	
+	<insert id="insertUser" parameterType="org.judking.carkeeper.src.model.UserModel">
+		insert into user_info(reg_time,user_name,user_passwd,private_token)
+		values(now(),#{user_name},password(#{user_passwd}),#{private_token})
+		<selectKey keyProperty="user_id" resultType="String" order="AFTER">
+			select LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	
+	<select id="selectUser" parameterType="String" resultMap="userResultMap">
+		select * from user_info where user_name=#{user_name}
+	</select>
+
+	<select id="verifyUser" parameterType="String" resultMap="userResultMap">
+		select * from user_info where user_name=#{user_name} and user_passwd = password(#{user_passwd})
+	</select>
+
+	<select id="verifyUserName" parameterType="String" resultMap="userResultMap">
+		select * from user_info where user_name=#{user_name} and private_token = #{private_token}
+	</select>
+	
+	<select id="CheckUserVin" parameterType="String" resultType="java.lang.Integer">
+		select user_vin_id from user_vin where user_id=#{user_id} and vin=#{vin}
+	</select>
+	
+	<insert id="insertUserVin" parameterType="String">
+		insert into user_vin(user_id,vin)
+		values(#{user_id},#{vin})
+		<selectKey keyProperty="user_vin_id" resultType="java.lang.Integer" order="AFTER">
+			select LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+</mapper>

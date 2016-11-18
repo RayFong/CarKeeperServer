@@ -8,6 +8,5 @@
 /build
 /captures
 bin/*
-WEB-INF/classes/*
 WEB-INF/logs/*
 work/*
