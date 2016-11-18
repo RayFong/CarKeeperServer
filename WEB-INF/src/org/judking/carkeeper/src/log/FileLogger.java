@@ -11,13 +11,15 @@ import java.util.Date;
  */
 public class FileLogger {
     private static final FileLogger logger = new FileLogger();
-    private static final String FILENAME = "D:\\CarKeeper\\CarKeeperServer\\WEB-INF\\logs\\CarKeeperLog.txt";
+    private static SimpleDateFormat dateFormat = new SimpleDateFormat("[yyyy/MM/dd HH:mm:ss]: ");
     private OutputStream out = null;
 
     private FileLogger() {
         try {
-            out = new FileOutputStream(new File(FILENAME));
-        } catch (Exception ex) {
+            String path = System.getProperty("user.dir") + File.separator + ".." + File.separator + "logs"
+                    + File.separator + "CarKeeperServerLog.txt";
+            out = new FileOutputStream(new File(path));
+        } catch (Exception ignored) {
 
         }
     }
@@ -27,18 +29,18 @@ public class FileLogger {
             if (logger.out != null) {
                 logger.out.write((tag + ": " + content + "\r\n").getBytes());
             }
-        } catch (Exception ex) {
+        } catch (Exception ignored) {
 
         }
     }
 
     public static void access(String method, String url) {
-        String date = new SimpleDateFormat("yyyyMMdd").format(new Date());
+        String date = dateFormat.format(new Date());
         try {
             if (logger.out != null) {
-                logger.out.write((date + ": " + method + " " + url + "\r\n").getBytes());
+                logger.out.write((date + method + " " + url + "\r\n").getBytes());
             }
-        } catch (Exception ex) {
+        } catch (Exception ignored) {
 
         }
     }
