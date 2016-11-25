@@ -10,3 +10,4 @@
 bin/*
 WEB-INF/logs/*
 work/*
+out/*
