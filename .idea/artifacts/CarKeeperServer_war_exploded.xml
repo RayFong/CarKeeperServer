@@ -59,6 +59,10 @@
           <element id="library" level="module" name="spring-webmvc-portlet-4.3.3.RELEASE.jar" module-name="CarKeeperServer" />
           <element id="library" level="module" name="urlrewritefilter-4.0.4.jar" module-name="CarKeeperServer" />
           <element id="library" level="module" name="validation-api-1.0.0.GA.jar" module-name="CarKeeperServer" />
+          <element id="library" level="project" name="jasper" />
+          <element id="library" level="project" name="el-api" />
+          <element id="library" level="project" name="annotations-api" />
+          <element id="library" level="project" name="jstl-1.2" />
         </element>
       </element>
       <element id="library" level="module" name="spring-struts-4.3.3.RELEASE.jar" module-name="CarKeeperServer" />
