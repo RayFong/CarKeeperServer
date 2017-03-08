@@ -28,7 +28,7 @@ public class UserController {
         UserModel userModel = userService.registry(username, passwd);
         String privateToken = userModel.getPrivate_token();
 
-        modelMap.addAttribute("state", "privateToken=\"" + privateToken + "\"");
+        modelMap.addAttribute("state", privateToken);
         return "org/judking/carkeeper/resource/page/state";
     }
 
@@ -43,7 +43,7 @@ public class UserController {
         if (privateToken.equals(UserService.USER_NOT_EXIST) || privateToken.equals(UserService.VERIFY_FAIL)) {
             modelMap.addAttribute("state", "wrong username or password");
         } else {
-            modelMap.addAttribute("state", "privateToken=\"" + privateToken + "\"");
+            modelMap.addAttribute("state", privateToken);
         }
         return statePage;
     }

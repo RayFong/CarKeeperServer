@@ -4,6 +4,7 @@ import org.judking.carkeeper.src.DAO.IPddDAO;
 import org.judking.carkeeper.src.DAO.IUserDAO;
 import org.judking.carkeeper.src.bean.CommandTransmitter;
 import org.judking.carkeeper.src.bean.OneKeyCmpTransmitter;
+import org.judking.carkeeper.src.bean.RouteBean;
 import org.judking.carkeeper.src.model.PddDataModel;
 import org.judking.carkeeper.src.model.RouteModel;
 import org.judking.carkeeper.src.model.UserModel;
@@ -39,6 +40,62 @@ public class PddDataService {
     private ResourceService resourceService;
 
     private Map<String, String> cmdNameMap;
+
+    private static List<PddDataModel> genPddDataModel(
+            CommandTransmitter transmitter, String route_id) {
+        List<PddDataModel> pddDataModels = new ArrayList<PddDataModel>();
+        for (PddDataModel pdm : transmitter.getCommands().values()) {
+            pdm.setRoute_id(route_id);
+            pdm.setDate(transmitter.getDate());
+            pddDataModels.add(pdm);
+        }
+
+        return pddDataModels;
+    }
+
+    // new pdd post
+    public void insertRoute(RouteBean route) {
+        String vin = route.getVin();
+        String userName = route.getUser();
+        String privateToken = route.getToken();
+
+        // begin a transaction for registering to DB
+        TransactionStatus status = dataSourceTransactionManager.getTransaction(new DefaultTransactionDefinition());
+
+        try {
+            if (!userName.equals("null")) {
+                //check data integrity of user name and private token.
+                UserModel userModel = iUserDAO.verifyUserName(userName, privateToken);
+                if (userModel != null) {
+                    Integer user_vin_id = iUserDAO.CheckUserVin(userModel.getUser_id(), vin);
+                    if (user_vin_id == null) {
+                        iUserDAO.insertUserVin(userModel.getUser_id(), vin);
+                    }
+                }
+            }
+
+            // write into `route` table
+            RouteModel routeModel = new RouteModel(vin, route.getStartDate(), String.valueOf(route.getDuration()));
+            DbHelper.assertGtZero(iPddDAO.insertRoute(routeModel));
+
+            // write into pdd_data table
+            Map<String, List<PddDataModel>> commands = route.getCommands();
+            for (Map.Entry<String, List<PddDataModel>> command : commands.entrySet()) {
+                for (PddDataModel pddDataModel : command.getValue()) {
+                    pddDataModel.setCmd(command.getKey());
+                    pddDataModel.setRoute_id(routeModel.getRoute_id());
+                }
+
+                insertPddData(command.getValue());
+            }
+
+            dataSourceTransactionManager.commit(status);
+        } catch (RuntimeException e) {
+            dataSourceTransactionManager.rollback(status);
+            throw e;
+        }
+
+    }
 
     // --pdd post
     public void insertWholeRoute(List<CommandTransmitter> transmitters,
@@ -80,18 +137,6 @@ public class PddDataService {
             throw e;
         }
 
-    }
-
-    private static List<PddDataModel> genPddDataModel(
-            CommandTransmitter transmitter, String route_id) {
-        List<PddDataModel> pddDataModels = new ArrayList<PddDataModel>();
-        for (PddDataModel pdm : transmitter.getCommands().values()) {
-            pdm.setRoute_id(route_id);
-            pdm.setDate(transmitter.getDate());
-            pddDataModels.add(pdm);
-        }
-
-        return pddDataModels;
     }
 
     private void insertPddData(List<PddDataModel> pddDataModels) {

@@ -1,5 +1,6 @@
 package org.judking.carkeeper.src.service;
 
+import org.judking.carkeeper.src.model.UserModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.Authentication;
@@ -25,7 +26,13 @@ public class AjaxAuthenticationSuccessHandler implements AuthenticationSuccessHa
         //output result to response
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter writer = response.getWriter();
-        String rtn = "success";
+        String rtn;
+        UserModel userModel = userService.tryGetCurrentLoginUserModel();
+        if (userModel != null) {
+            rtn = userModel.getPrivate_token();
+        } else {
+            rtn = "*success";
+        }
         writer.write(rtn);
         writer.close();
 
