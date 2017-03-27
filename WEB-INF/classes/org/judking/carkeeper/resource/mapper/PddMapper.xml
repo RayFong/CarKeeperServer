@@ -1,123 +1,132 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper
-  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-  
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
 <mapper namespace="org.judking.carkeeper.src.DAO.IPddDAO">
 
-	<resultMap id="pddDataResultMap"  type="org.judking.carkeeper.src.model.PddDataModel">
-		<id property="pdd_id" column="pdd_id"/>
-		<id property="route_id" column="route_id"/>
-		<id property="date" column="time" javaType="java.util.Date" jdbcType="TIMESTAMP"/>
-		<id property="cmd" column="cmd"/>
-		<id property="ripeData" column="data"/>
-	</resultMap>
-	
-	<resultMap id="routeResultMap"  type="org.judking.carkeeper.src.model.RouteModel">
-		<id property="route_id" column="route_id"/>
-		<id property="vin" column="vin"/>
-		<id property="start_time" column="start_time" javaType="java.util.Date" jdbcType="TIMESTAMP"/>
-		<id property="duration" column="duration"/>
-	</resultMap>
-	
-	<resultMap id="vinDetailResultMap"  type="org.judking.carkeeper.src.model.VinDetailModel">
-		<id property="vin_detail_id" column="vin_detail_id"/>
-		<id property="vin" column="vin"/>
-		<id property="car_type" column="car_type"/>
-		<id property="miles" column="miles"/>
-	</resultMap>
-	
-	<insert id="insertPddData" parameterType="org.judking.carkeeper.src.model.PddDataModel">
-		insert into pdd_data(route_id,time,cmd,data)
-		values(#{route_id},#{date},#{cmd},#{ripeData})
-		<selectKey keyProperty="pdd_id" resultType="String" order="AFTER">
-			select LAST_INSERT_ID()
-		</selectKey>
-	</insert>
-	
-	<insert id="insertRoute" parameterType="org.judking.carkeeper.src.model.RouteModel">
-		insert into route(vin,start_time,duration)
-		values(#{vin},#{start_time},#{duration})
-		<selectKey keyProperty="route_id" resultType="String" order="AFTER">
-			select LAST_INSERT_ID()
-		</selectKey>
-	</insert>
-	
-	<select id="selectAllVin" resultType="String">
+    <resultMap id="pddDataResultMap" type="org.judking.carkeeper.src.model.PddDataModel">
+        <id property="pdd_id" column="pdd_id"/>
+        <id property="route_id" column="route_id"/>
+        <id property="date" column="time" javaType="java.util.Date" jdbcType="TIMESTAMP"/>
+        <id property="cmd" column="cmd"/>
+        <id property="ripeData" column="data"/>
+    </resultMap>
+
+    <resultMap id="routeResultMap" type="org.judking.carkeeper.src.model.RouteModel">
+        <id property="route_id" column="route_id"/>
+        <id property="vin" column="vin"/>
+        <id property="start_time" column="start_time" javaType="java.util.Date" jdbcType="TIMESTAMP"/>
+        <id property="duration" column="duration"/>
+        <id property="miles" column="miles"/>
+        <id property="fuels" column="fuels"/>
+        <id property="rapid_acc" column="rapid_acc"/>
+        <id property="rapid_dec" column="rapid_dec"/>
+        <id property="price" column="price"/>
+    </resultMap>
+
+    <resultMap id="vinDetailResultMap" type="org.judking.carkeeper.src.model.VinDetailModel">
+        <id property="vin_detail_id" column="vin_detail_id"/>
+        <id property="vin" column="vin"/>
+        <id property="car_type" column="car_type"/>
+        <id property="miles" column="miles"/>
+    </resultMap>
+
+    <insert id="insertPddData" parameterType="org.judking.carkeeper.src.model.PddDataModel">
+        insert into pdd_data(route_id,time,cmd,data)
+        values(#{route_id},#{date},#{cmd},#{ripeData})
+        <selectKey keyProperty="pdd_id" resultType="String" order="AFTER">
+            select LAST_INSERT_ID()
+        </selectKey>
+    </insert>
+
+    <insert id="insertRoute" parameterType="org.judking.carkeeper.src.model.RouteModel">
+        insert into route(vin,start_time,duration,miles,fuels,rapid_acc,rapid_dec, price)
+        values(#{vin},#{start_time},#{duration},#{miles},#{fuels},#{rapid_acc},#{rapid_dec}, #{price})
+        <selectKey keyProperty="route_id" resultType="String" order="AFTER">
+            select LAST_INSERT_ID()
+        </selectKey>
+    </insert>
+
+    <select id="selectAllVin" resultType="String">
 		select distinct vin from route
 	</select>
 
-	<select id="selectAllRouteByVin" parameterType="String" resultMap="routeResultMap">
+    <select id="selectAllRouteByVin" parameterType="String" resultMap="routeResultMap">
 		select * from route where vin = #{vin}
 	</select>
-	
-	<select id="selectStartTimeByRouteId" parameterType="String" resultType="java.util.Date">
+
+    <select id="selectRouteByVinId" parameterType="String" resultMap="routeResultMap">
+        SELECT * FROM route WHERE UNIX_TIMESTAMP(start_time) = #{start_time} AND vin = #{vin}
+    </select>
+
+    <select id="selectStartTimeByRouteId" parameterType="String" resultType="java.util.Date">
 		select start_time from route where route_id=#{route_id};
 	</select>
-	
-	<select id="selectAllPddDataByRoute" parameterType="String" resultMap="pddDataResultMap">
-		select * from pdd_data where route_id = #{route_id}
+
+    <select id="selectAllPddDataByRoute" parameterType="String" resultMap="pddDataResultMap">
+		select * from pdd_data where route_id = #{route_id} ORDER BY time ASC
 	</select>
-	
-	<select id="selectAllPddDataByRouteNCmd" parameterType="String" resultMap="pddDataResultMap">
+
+    <select id="selectAllPddDataByRouteNCmd" parameterType="String" resultMap="pddDataResultMap">
 		select * from pdd_data where route_id = #{route_id} and cmd = #{cmd} order by time asc
 	</select>
-	
-	<select id="selectSpecifiedPddData" parameterType="String" resultMap="pddDataResultMap">
+
+    <select id="selectSpecifiedPddData" parameterType="String" resultMap="pddDataResultMap">
 		select * from pdd_data where route_id = #{route_id} 
 														and cmd = #{cmd} 
 														and TIME_TO_SEC(timediff(time, #{route_begin_time})) &gt;= #{start_time} 
 														and TIME_TO_SEC(timediff(time, #{route_begin_time})) &lt;= #{end_time}
 	</select>
-	
-	<select id="selectSupportedCmdByRouteId" parameterType="String" resultType="String">
+
+    <select id="selectSupportedCmdByRouteId" parameterType="String" resultType="String">
 		select distinct cmd from pdd_data where route_id = #{route_id}
 	</select>
-	
-	<select id="selectVinByUserId" resultType="String">
+
+    <select id="selectVinByUserId" resultType="String">
 		select vin from user_vin where user_id = #{user_id}
 	</select>
-	
-	<select id="selectLevel1CompressRoutes" resultType="String">
+
+    <select id="selectLevel1CompressRoutes" resultType="String">
 		select route_id from route where datediff(now(), start_time) &gt;= 30 
 													   and datediff(now(), start_time) &lt; 90
 	</select>
-	
-	<select id="selectLevel2CompressRoutes" resultType="String">
+
+    <select id="selectLevel2CompressRoutes" resultType="String">
 		select route_id from route where datediff(now(), start_time) &gt;= 90 
 	</select>
 
-	<delete id="deleteByPddId" parameterType="String">
+    <delete id="deleteByPddId" parameterType="String">
 		delete from pdd_data where pdd_id = #{pdd_id}
 	</delete>
 
-	<insert id="insertVinDetail" parameterType="org.judking.carkeeper.src.model.VinDetailModel">
-		insert into vin_detail(vin,car_type,miles)
-		values(#{vin},#{car_type},#{miles})
-		<selectKey keyProperty="vin_detail_id" resultType="String" order="AFTER">
-			select LAST_INSERT_ID()
-		</selectKey>
-	</insert>
-	
-	<select id="selectVinDetailByVin" parameterType="String" resultMap="vinDetailResultMap">
+    <insert id="insertVinDetail" parameterType="org.judking.carkeeper.src.model.VinDetailModel">
+        insert into vin_detail(vin,car_type,miles)
+        values(#{vin},#{car_type},#{miles})
+        <selectKey keyProperty="vin_detail_id" resultType="String" order="AFTER">
+            select LAST_INSERT_ID()
+        </selectKey>
+    </insert>
+
+    <select id="selectVinDetailByVin" parameterType="String" resultMap="vinDetailResultMap">
 		select * from vin_detail where vin = #{vin}
 	</select>
-	
-	<update id="updateVinDetailByVin" parameterType="org.judking.carkeeper.src.model.VinDetailModel">
+
+    <update id="updateVinDetailByVin" parameterType="org.judking.carkeeper.src.model.VinDetailModel">
 		update vin_detail set car_type=#{car_type}, miles=#{miles} where vin = #{vin}
 	</update>
-	
-	<select id="selectOtherSameVins" parameterType="String" resultType="String">
+
+    <select id="selectOtherSameVins" parameterType="String" resultType="String">
 		select vin from vin_detail where car_type=(select car_type from vin_detail where vin=#{vin}) 
 													and miles=(select miles from vin_detail where vin=#{vin}) 
 													and vin != #{vin};
 	</select>
-	
-	<select id="calAvgByRoutesNCmd" resultType="String">  
-    	select avg(data) from pdd_data where cmd=#{cmd} and route_id in
-	    <foreach collection="list" index="index" item="item" open="(" separator="," close=")">  
-	        #{item}  
-	    </foreach>  
-	</select> 
+
+    <select id="calAvgByRoutesNCmd" resultType="String">
+        select avg(data) from pdd_data where cmd=#{cmd} and route_id in
+        <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
 
 </mapper>

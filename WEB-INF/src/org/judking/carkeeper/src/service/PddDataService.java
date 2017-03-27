@@ -1,10 +1,10 @@
 package org.judking.carkeeper.src.service;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.judking.carkeeper.src.DAO.IPddDAO;
 import org.judking.carkeeper.src.DAO.IUserDAO;
-import org.judking.carkeeper.src.bean.CommandTransmitter;
-import org.judking.carkeeper.src.bean.OneKeyCmpTransmitter;
-import org.judking.carkeeper.src.bean.RouteBean;
+import org.judking.carkeeper.src.bean.*;
 import org.judking.carkeeper.src.model.PddDataModel;
 import org.judking.carkeeper.src.model.RouteModel;
 import org.judking.carkeeper.src.model.UserModel;
@@ -19,10 +19,12 @@ import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import javax.annotation.PostConstruct;
 import java.io.*;
+import java.lang.reflect.Modifier;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 @Service("pddDataService")
 public class PddDataService {
@@ -55,7 +57,8 @@ public class PddDataService {
 
     // new pdd post
     public void insertRoute(RouteBean route) {
-        String vin = route.getVin();
+        RouteModel routeModel = route.getRouteModel();
+        String vin = routeModel.getVin();
         String userName = route.getUser();
         String privateToken = route.getToken();
 
@@ -75,7 +78,6 @@ public class PddDataService {
             }
 
             // write into `route` table
-            RouteModel routeModel = new RouteModel(vin, route.getStartDate(), String.valueOf(route.getDuration()));
             DbHelper.assertGtZero(iPddDAO.insertRoute(routeModel));
 
             // write into pdd_data table
@@ -194,6 +196,29 @@ public class PddDataService {
         return cmdNames;
     }
 
+    public List<PddDataBean> getPddDataFromRouteId(String route_id, String cmd) {
+        List<PddDataModel> pddDataModels = iPddDAO.selectAllPddDataByRouteNCmd(route_id, cmd);
+        List<PddDataBean> pddDataBeans = new ArrayList<>();
+        for (PddDataModel data : pddDataModels) {
+            PddDataBean bean = new PddDataBean();
+            bean.setDate(data.getDate());
+            bean.setRipeData(data.getRipeData());
+            pddDataBeans.add(bean);
+        }
+        return pddDataBeans;
+    }
+
+    public String toJson(List<PddDataBean> datas, long time) {
+        CommandBean bean = new CommandBean();
+        bean.setDatas(datas);
+        bean.setTime(time);
+
+        GsonBuilder builder = new GsonBuilder();
+        builder.excludeFieldsWithModifiers(Modifier.TRANSIENT);
+        Gson gson = builder.create();
+        return gson.toJson(bean);
+    }
+
     public String getFmtRouteBeginTime(String route_id) {
         //generate route_begin_time
         Date route_begin_time = iPddDAO.selectStartTimeByRouteId(route_id);
@@ -293,6 +318,22 @@ public class PddDataService {
             }
         }
 
+    }
+
+    // 压缩
+    private String compress(String str) {
+        if (str == null || str.length() == 0) {
+            return null;
+        }
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        try {
+            GZIPOutputStream gzip = new GZIPOutputStream(out);
+            gzip.write(str.getBytes());
+            gzip.close();
+            return out.toString();
+        } catch (IOException ie) {
+            return null;
+        }
     }
 
     /**

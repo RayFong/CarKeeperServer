@@ -1,6 +1,7 @@
 package org.judking.carkeeper.src.controller;
 
 import org.judking.carkeeper.src.DAO.IPddDAO;
+import org.judking.carkeeper.src.bean.PddDataBean;
 import org.judking.carkeeper.src.log.FileLogger;
 import org.judking.carkeeper.src.model.PddDataModel;
 import org.judking.carkeeper.src.model.RouteModel;
@@ -25,6 +26,7 @@ import java.util.Map;
 @Controller
 @RequestMapping("/pdd")
 public class PddController {
+    private static final String state_page = "org/judking/carkeeper/resource/page/state";
     @Autowired
     @Qualifier("userService")
     UserService userService;
@@ -129,6 +131,17 @@ public class PddController {
 //		String json = "{\"xScale\": \"time\",\"yScale\": \"linear\",\"main\": [{\"data\": [{\"x\":\"0\",\"y\":30.0},{\"x\":\"21\",\"y\":30.0}]}]}";
         modelMap.addAttribute("state", json);
         return "org/judking/carkeeper/resource/page/state";
+    }
+
+    @RequestMapping(method = RequestMethod.POST, value = "/queryPddData/")
+    public String queryPddData(@RequestParam long start_time, @RequestParam String vin, @RequestParam String cmd, ModelMap modelMap) {
+        List<RouteModel> routes = iPddDAO.selectRouteByVinId(start_time, vin);
+        if (routes != null && !routes.isEmpty()) {
+            List<PddDataBean> datas = pddDataService.getPddDataFromRouteId(routes.get(0).getRoute_id(), cmd);
+            String json = pddDataService.toJson(datas, routes.get(0).getStart_time().getTime());
+            modelMap.addAttribute("state", json);
+        }
+        return state_page;
     }
 
 
