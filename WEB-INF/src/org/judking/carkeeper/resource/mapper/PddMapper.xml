@@ -80,7 +80,7 @@
 	</select>
 
     <select id="selectSupportedCmdByRouteId" parameterType="String" resultType="String">
-		select distinct cmd from pdd_data where route_id = #{route_id}
+		select distinct cmd from pdd_data where route_id = #{route_id} order by cmd
 	</select>
 
     <select id="selectVinByUserId" resultType="String">

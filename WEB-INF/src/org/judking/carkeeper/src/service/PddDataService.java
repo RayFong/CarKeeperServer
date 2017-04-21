@@ -175,6 +175,7 @@ public class PddDataService {
     public String getCmdName(String cmd) {
         String name = cmdNameMap.get(cmd.toLowerCase());
         name = (name == null ? cmdNameMap.get(cmd.toUpperCase()) : name);
+        name = name == null ? cmd : name;
         return name;
     }
 
