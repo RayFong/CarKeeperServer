@@ -8,6 +8,7 @@ import org.judking.carkeeper.src.model.RouteModel;
 import org.judking.carkeeper.src.model.UserModel;
 import org.judking.carkeeper.src.model.VinDetailModel;
 import org.judking.carkeeper.src.service.PddDataService;
+import org.judking.carkeeper.src.service.PerformanceService;
 import org.judking.carkeeper.src.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -36,6 +37,17 @@ public class PddController {
     @Autowired
     @Qualifier("IPddDAO")
     private IPddDAO iPddDAO;
+
+    @Autowired
+    @Qualifier("performanceService")
+    private PerformanceService performanceService;
+
+    @RequestMapping(method = RequestMethod.POST, value = "/performance/")
+    public String queryPerformance(HttpServletRequest request, @RequestParam String vin, @RequestParam int limit, ModelMap modelMap) {
+        String data = performanceService.queryPerformance(vin, limit);
+        modelMap.addAttribute("state", data);
+        return state_page;
+    }
 
     @RequestMapping(method = RequestMethod.GET, value = "/vin/")
     public String vins(HttpServletRequest request,

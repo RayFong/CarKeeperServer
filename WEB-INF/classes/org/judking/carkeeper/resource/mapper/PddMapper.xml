@@ -25,6 +25,13 @@
         <id property="price" column="price"/>
     </resultMap>
 
+    <resultMap id="performanceResultMap" type="org.judking.carkeeper.src.model.PerformanceModel">
+        <id property="route_id" column="route_id"/>
+        <id property="oxygen" column="oxygen" javaType="java.lang.Double"/>
+        <id property="inject" column="inject" javaType="java.lang.Double"/>
+        <id property="catalyst" column="catalyst" javaType="java.lang.Double"/>
+    </resultMap>
+
     <resultMap id="vinDetailResultMap" type="org.judking.carkeeper.src.model.VinDetailModel">
         <id property="vin_detail_id" column="vin_detail_id"/>
         <id property="vin" column="vin"/>
@@ -47,6 +54,19 @@
             select LAST_INSERT_ID()
         </selectKey>
     </insert>
+
+    <insert id="insertPerformance" parameterType="org.judking.carkeeper.src.model.PerformanceModel">
+        INSERT INTO performance(route_id, oxygen, catalyst, inject)
+        VALUES (#{route_id}, #{oxygen}, #{catalyst}, #{inject})
+        <selectKey keyProperty="route_id" resultType="String" order="AFTER">
+            select LAST_INSERT_ID()
+        </selectKey>
+    </insert>
+
+    <select id="selectNearlyPerformance" parameterType="String" resultMap="performanceResultMap">
+        SELECT * FROM performance WHERE route_id IN (SELECT route_id FROM (
+          SELECT  route_id FROM route WHERE vin=#{vin} ORDER BY route_id DESC LIMIT #{limit}) AS TEMP) ORDER BY route_id;
+    </select>
 
     <select id="selectAllVin" resultType="String">
 		select distinct vin from route

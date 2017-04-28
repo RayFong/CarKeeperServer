@@ -2,6 +2,7 @@ package org.judking.carkeeper.src.DAO;
 
 import org.apache.ibatis.annotations.Param;
 import org.judking.carkeeper.src.model.PddDataModel;
+import org.judking.carkeeper.src.model.PerformanceModel;
 import org.judking.carkeeper.src.model.RouteModel;
 import org.judking.carkeeper.src.model.VinDetailModel;
 
@@ -13,6 +14,10 @@ public interface IPddDAO {
     int insertPddData(PddDataModel pddDataModel);
 
     int insertRoute(RouteModel routeModel);
+
+    int insertPerformance(PerformanceModel performanceModel);
+
+    List<PerformanceModel> selectNearlyPerformance(@Param("vin") String vin, @Param("limit") int limit);
 
     List<String> selectAllVin();
 
