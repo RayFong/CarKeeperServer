@@ -32,6 +32,23 @@
         <id property="catalyst" column="catalyst" javaType="java.lang.Double"/>
     </resultMap>
 
+    <resultMap id="locationResultMap" type="com.leilf.database.model.LocationModel">
+        <id property="id" column="id"/>
+        <id property="latitude" column="latitude"/>
+        <id property="longitude" column="longitude"/>
+        <id property="stay" column="time"/>
+        <id property="fuels" column="fuels"/>
+        <id property="miles" column="miles"/>
+    </resultMap>
+
+    <resultMap id="roadResultMap" type="com.leilf.database.model.RoadModel">
+        <id property="from" column="start"/>
+        <id property="to" column="end"/>
+        <id property="fuel" column="fuels"/>
+        <id property="mile" column="miles"/>
+        <id property="time" column="time"/>
+    </resultMap>
+
     <resultMap id="vinDetailResultMap" type="org.judking.carkeeper.src.model.VinDetailModel">
         <id property="vin_detail_id" column="vin_detail_id"/>
         <id property="vin" column="vin"/>
@@ -62,6 +79,47 @@
             select LAST_INSERT_ID()
         </selectKey>
     </insert>
+
+    <insert id="insertLocation" parameterType="com.leilf.database.model.LocationModel">
+        INSERT INTO location(latitude, longitude, fuels, miles, time)
+        VALUES (#{latitude}, #{longitude}, #{fuels}, #{miles}, #{stay})
+        <selectKey keyProperty="id" resultType="int" order="AFTER">
+            select LAST_INSERT_ID()
+        </selectKey>
+    </insert>
+
+    <insert id="insertRoad" parameterType="com.leilf.database.model.RoadModel">
+        INSERT INTO road(start, end, fuels, miles, time)
+        VALUES (#{from}, #{to}, #{fuel}, #{mile}, #{time})
+        <selectKey resultType="int">
+            select LAST_INSERT_ID()
+        </selectKey>
+    </insert>
+
+    <update id="updateLocation" parameterType="com.leilf.database.model.LocationModel">
+        UPDATE location SET latitude=#{latitude}, longitude=#{longitude}, fuels=#{fuels}, miles=#{miles},
+        time=#{stay} WHERE id=#{id}
+    </update>
+
+    <update id="updateRoad" parameterType="com.leilf.database.model.RoadModel">
+        UPDATE road SET fuels=#{fuel}, miles=#{mile}, time=#{time} WHERE start=#{from} AND end=#{to}
+    </update>
+
+    <select id="queryLocations" parameterType="String" resultMap="locationResultMap">
+        SELECT * FROM location WHERE latitude BETWEEN #{min_latitude} AND #{max_latitude} 
+        AND longitude BETWEEN #{min_longitude} AND #{max_longitude}
+    </select>
+
+    <select id="queryRoads" parameterType="map" resultMap="roadResultMap">
+        SELECT * FROM road WHERE start IN
+        <foreach collection="locations" item="item" index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        AND end IN
+        <foreach collection="locations" item="item" index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
 
     <select id="selectNearlyPerformance" parameterType="String" resultMap="performanceResultMap">
         SELECT * FROM performance WHERE route_id IN (SELECT route_id FROM (

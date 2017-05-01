@@ -6,8 +6,8 @@ import com.leilf.hmm.corpus.DataEntry;
 import com.leilf.hmm.corpus.DataPrepossessing;
 import com.leilf.hmm.corpus.Instance;
 import com.leilf.hmm.model.HMMModel;
-import com.leilf.hmm.util.CommonUtils;
 import com.leilf.hmm.util.ObservationHelper;
+import com.leilf.util.CommonUtils;
 import org.judking.carkeeper.src.DAO.IPddDAO;
 import org.judking.carkeeper.src.bean.RouteBean;
 import org.judking.carkeeper.src.model.PddDataModel;
@@ -29,9 +29,12 @@ import java.util.Map;
 @Service("performanceService")
 public class PerformanceService {
     private static final double DISCOUNT = 0.2;
+    private final IPddDAO iPddDAO;
+
     @Autowired
-    @Qualifier("IPddDAO")
-    private IPddDAO iPddDAO;
+    public PerformanceService(@Qualifier("IPddDAO") IPddDAO iPddDAO) {
+        this.iPddDAO = iPddDAO;
+    }
 
     public void insertPerformance(RouteBean routeBean) {
         new PerformanceThread(routeBean).start();

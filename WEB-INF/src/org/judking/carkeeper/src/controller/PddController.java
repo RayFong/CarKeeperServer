@@ -1,5 +1,7 @@
 package org.judking.carkeeper.src.controller;
 
+import com.leilf.database.model.LocationModel;
+import com.leilf.graph.Point;
 import org.judking.carkeeper.src.DAO.IPddDAO;
 import org.judking.carkeeper.src.bean.PddDataBean;
 import org.judking.carkeeper.src.log.FileLogger;
@@ -9,6 +11,7 @@ import org.judking.carkeeper.src.model.UserModel;
 import org.judking.carkeeper.src.model.VinDetailModel;
 import org.judking.carkeeper.src.service.PddDataService;
 import org.judking.carkeeper.src.service.PerformanceService;
+import org.judking.carkeeper.src.service.RouteSearchService;
 import org.judking.carkeeper.src.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -42,10 +45,33 @@ public class PddController {
     @Qualifier("performanceService")
     private PerformanceService performanceService;
 
+    @Autowired
+    @Qualifier("routeSearchService")
+    private RouteSearchService routeSearchService;
+
     @RequestMapping(method = RequestMethod.POST, value = "/performance/")
     public String queryPerformance(HttpServletRequest request, @RequestParam String vin, @RequestParam int limit, ModelMap modelMap) {
         String data = performanceService.queryPerformance(vin, limit);
         modelMap.addAttribute("state", data);
+        return state_page;
+    }
+
+    @RequestMapping(method = RequestMethod.POST, value = "/searchRoutes/")
+    public String searchRoutes(HttpServletRequest request, @RequestParam String vin, @RequestParam double x, @RequestParam double y,
+                               @RequestParam double x2, @RequestParam double y2, @RequestParam int type, ModelMap modelMap) {
+        LocationModel start = new LocationModel();
+        start.setLatitude(x);
+        start.setLongitude(y);
+
+        LocationModel end = new LocationModel();
+        end.setLatitude(x2);
+        end.setLongitude(y2);
+        List<Point> points = routeSearchService.search(start, end, type);
+        if (points == null || points.size() <= 1) {
+            modelMap.addAttribute("state", "fails");
+        } else {
+            modelMap.addAttribute("state", routeSearchService.formatLocationToJson(points));
+        }
         return state_page;
     }
 

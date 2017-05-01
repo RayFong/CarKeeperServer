@@ -8,6 +8,7 @@ import org.judking.carkeeper.src.bean.CommandTransmitter;
 import org.judking.carkeeper.src.bean.RouteBean;
 import org.judking.carkeeper.src.service.PddDataService;
 import org.judking.carkeeper.src.service.PerformanceService;
+import org.judking.carkeeper.src.service.RouteSearchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
@@ -32,6 +33,10 @@ public class UploadController {
     @Autowired
     @Qualifier("performanceService")
     private PerformanceService performanceService;
+
+    @Autowired
+    @Qualifier("routeSearchService")
+    private RouteSearchService routeSearchService;
 
     @RequestMapping(method = RequestMethod.POST, value = "/pdd/")
     public synchronized String pdd(HttpServletRequest request,
@@ -110,6 +115,7 @@ public class UploadController {
         RouteBean route = gson.fromJson(jsonData, RouteBean.class);
         pddDataService.insertRoute(route);
         performanceService.insertPerformance(route);
+        routeSearchService.buildRoadMap(route);
 
         return "org/judking/carkeeper/resource/page/state";
     }

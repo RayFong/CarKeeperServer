@@ -1,5 +1,7 @@
 package org.judking.carkeeper.src.DAO;
 
+import com.leilf.database.model.LocationModel;
+import com.leilf.database.model.RoadModel;
 import org.apache.ibatis.annotations.Param;
 import org.judking.carkeeper.src.model.PddDataModel;
 import org.judking.carkeeper.src.model.PerformanceModel;
@@ -16,6 +18,21 @@ public interface IPddDAO {
     int insertRoute(RouteModel routeModel);
 
     int insertPerformance(PerformanceModel performanceModel);
+
+    int insertLocation(LocationModel locationModel);
+
+    int insertRoad(RoadModel roadModel);
+
+    int updateLocation(LocationModel locationModel);
+
+    int updateRoad(RoadModel roadModel);
+
+    List<LocationModel> queryLocations(@Param("min_latitude") double min_latitude,
+                                       @Param("max_latitude") double max_latitude,
+                                       @Param("min_longitude") double min_longitude,
+                                       @Param("max_longitude") double max_longitude);
+
+    List<RoadModel> queryRoads(Map<String, List<Integer>> params);
 
     List<PerformanceModel> selectNearlyPerformance(@Param("vin") String vin, @Param("limit") int limit);
 
